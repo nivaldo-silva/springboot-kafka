@@ -1,0 +1,57 @@
+server:
+  port: 8282
+
+spring:
+  application:
+    name: api-boleto
+
+
+  datasource:
+    url: jdbc:h2:mem:boletodb
+    driver-class-name: org.h2.Driver
+    username: admin
+    password: admin123
+  h2:
+    console:
+      enabled: true
+
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      acks: all
+      retries: 3
+      properties:
+        avro.use.logical.type.converters: true
+        enable.idempotence: true
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085}
+
+    consumer:
+      group-id: api-boleto.status.consumer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      auto-offset-reset: earliest
+      properties:
+        avro.use.logical.type.converters: true
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+        specific.avro.reader: true
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085}
+
+
+kafka:
+  topics:
+    boleto-emitido: boleto-emitido
+    boleto-pago: boleto-pago
+
+  consumer-groups:
+    status: api-boleto.status.consumer
+
+
+logging:
+  level:
+    root: INFO
+    io.github.nivaldosilva: DEBUG
+    org.apache.kafka: INFO

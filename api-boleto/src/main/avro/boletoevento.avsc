@@ -1,0 +1,39 @@
+{
+  "type": "record",
+  "namespace": "io.github.nivaldosilva.avro",
+  "name": "BoletoEvento",
+  "doc": "Evento emitido quando um boleto é criado",
+  "fields": [
+    {
+      "name": "codigoBarras",
+      "type": "string"
+    },
+    {
+      "name": "descricao",
+      "type": "string"
+    },
+    {
+      "name": "valor",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "situacao",
+      "type": {
+        "type": "enum",
+        "name": "StatusBoleto",
+        "symbols": [
+          "BOLETO_EMITIDO",
+          "BOLETO_VALIDADO",
+          "BOLETO_INVALIDO",
+          "BOLETO_VENCIDO",
+          "BOLETO_CANCELADO",
+          "PAGAMENTO_PENDENTE",
+          "PAGAMENTO_CONFIRMADO",
+          "PAGAMENTO_CANCELADO",
+          "ERRO_PROCESSAMENTO"
+        ]
+      }
+    }
+  ]
+}

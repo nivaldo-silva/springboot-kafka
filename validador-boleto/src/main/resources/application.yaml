@@ -1,0 +1,50 @@
+server:
+  port: 8383
+
+spring:
+  application:
+    name: validador-boleto
+
+  datasource:
+    url: jdbc:h2:mem:validador-boleto
+    driver-class-name: org.h2.Driver
+    username: admin
+    password: admin123
+  h2:
+    console:
+      enabled: true
+
+
+  jackson:
+    date-format: dd/MM/yyyy HH:mm:ss
+    time-zone: America/Sao_Paulo
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    consumer:
+      group-id: validador-boleto-group
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      auto-offset-reset: earliest
+      properties:
+        avro.use.logical.type.converters: true
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+        specific.avro.reader: true
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      properties:
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085}
+
+kafka:
+  topics:
+    boleto-emitido: boleto-emitido
+    boleto-notificacao: boleto-validado
+    boleto-pago: boleto-pago
+
+  consumer-groups:
+    pagamento: pagamento-group
