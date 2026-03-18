@@ -145,18 +145,6 @@ Ambos os serviços usam **H2 in-memory** (perde dados ao reiniciar):
   - **Producer** (`ValidacaoProducer`): publica notificação em **`boleto-validado`** (com `situacao=BOLETO_VALIDADO` ou `BOLETO_INVALIDO`)
   - **Endpoint REST** (`POST /pagamentos/confirmar`): confirma pagamento somente se o boleto já foi validado; publica resultado em **`boleto-pago`**
 
-## Fluxo (visão geral)
-
-```mermaid
-flowchart LR
-  A[api-boleto\nPOST /api/v1/boletos] -->|produz BoletoEvento\nsituacao=BOLETO_EMITIDO| T1[(kafka: boleto-emitido)]
-  T1 -->|consome| B[validador-boleto\nBoletoConsumer]
-  B -->|valida (44 dígitos)\nproduz situacao=BOLETO_VALIDADO/BOLETO_INVALIDO| T2[(kafka: boleto-validado)]
-  C[validador-boleto\nPOST /pagamentos/confirmar] -->|produz situacao=PAGAMENTO_CONFIRMADO| T3[(kafka: boleto-pago)]
-  T3 -->|consome| D[api-boleto\nBoletoStatusConsumer]
-  D -->|atualiza status no H2| DB[(H2 api-boleto)]
-```
-
 ## Endpoints e URLs úteis
 
 ### `api-boleto` (8282)
