@@ -1,4 +1,4 @@
-Spring Boot Kafka — Boleto
+### Spring Boot Kafka — Boleto
 
 Projeto com duas aplicações Spring Boot que se comunicam por Apache Kafka, utilizando Avro e Confluent Schema Registry.
 
